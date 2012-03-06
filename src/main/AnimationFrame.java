@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package main;
 
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
@@ -278,7 +274,6 @@ public class AnimationFrame extends javax.swing.JFrame {
         bgLightSlider.setMajorTickSpacing(1);
         bgLightSlider.setMaximum(10);
         bgLightSlider.setMinimum(1);
-        bgLightSlider.setPaintTrack(false);
         bgLightSlider.setSnapToTicks(true);
         bgLightSlider.setValue(5);
         bgLightSlider.setPreferredSize(new java.awt.Dimension(100, 40));
@@ -297,7 +292,7 @@ public class AnimationFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
         optPanel.add(bgLightSlider, gridBagConstraints);
 
-        jLabel1.setText("Light Source");
+        jLabel1.setText("Light Source Brightness");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -343,7 +338,7 @@ public class AnimationFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
         optPanel.add(sphereLightSlider, gridBagConstraints);
 
-        jLabel2.setText("LED brightness");
+        jLabel2.setText("LED Brightness");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
@@ -378,8 +373,8 @@ public class AnimationFrame extends javax.swing.JFrame {
                         .addComponent(animPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(14, 14, 14)
-                        .addComponent(optPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(optPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)))
                 .addContainerGap())
         );

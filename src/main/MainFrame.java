@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package main;
 
 import java.awt.Color;
@@ -28,10 +24,14 @@ public class MainFrame extends javax.swing.JFrame {
     BufferedImage orgImg = null;
     BufferedImage scaledImg = null;
     BufferedImage convertedImg = null;
+    //
     private JFileChooser fc;
+    private JFileChooser fc_matrix;
+    //
     private int redTH;
     private int greenTH;
     private int blueTH;
+    //
     private MatrixFrame matrixFrame;
     private AnimationFrame animFrame;
 
@@ -40,7 +40,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         conf = Config.getInstance();
         readSliderVals();
-        updateColor();
+        setPickedColor();
     }
 
     @SuppressWarnings("unchecked")
@@ -66,18 +66,20 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         loadImageButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        printMatrixButton = new javax.swing.JButton();
+        loadMatrixButton = new javax.swing.JButton();
+        saveMatrixButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         start3DButton = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        closeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("GobeSimulator v0.2");
+        setName("mainFrame");
+        setResizable(false);
 
         gridPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -286,10 +288,10 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(loadImageButton, gridBagConstraints);
 
-        jButton1.setText("Load Matrix");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        loadMatrixButton.setText("Load Matrix");
+        loadMatrixButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                loadMatrixButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -297,12 +299,12 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jPanel2.add(jButton1, gridBagConstraints);
+        jPanel2.add(loadMatrixButton, gridBagConstraints);
 
-        printMatrixButton.setText("Save Matrix");
-        printMatrixButton.addActionListener(new java.awt.event.ActionListener() {
+        saveMatrixButton.setText("Save Matrix");
+        saveMatrixButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                printMatrixButtonActionPerformed(evt);
+                saveMatrixButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -311,7 +313,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.ipadx = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jPanel2.add(printMatrixButton, gridBagConstraints);
+        jPanel2.add(saveMatrixButton, gridBagConstraints);
 
         jLabel5.setText("Load  Image from File.");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -320,7 +322,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
         jPanel2.add(jLabel5, gridBagConstraints);
 
-        jLabel6.setText("Load RGB Matrix File.");
+        jLabel6.setText("Load RGB Matrix from File.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -366,10 +368,10 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton2.setText("Close");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        closeButton.setText("Close");
+        closeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                closeButtonActionPerformed(evt);
             }
         });
 
@@ -390,29 +392,29 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(97, 176, Short.MAX_VALUE))
+                                .addGap(97, 158, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jButton2)
+                                .addComponent(closeButton)
                                 .addContainerGap())))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(gridPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(12, 12, 12))))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(gridPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(gridPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(colorPickPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2))
-                    .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(closeButton))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(colorPickPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(imagePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -426,7 +428,7 @@ public class MainFrame extends javax.swing.JFrame {
             hasRed = false;
         }
 
-        updateColor();
+        setPickedColor();
     }//GEN-LAST:event_redCBStateChanged
 
     private void greenCBStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_greenCBStateChanged
@@ -436,7 +438,7 @@ public class MainFrame extends javax.swing.JFrame {
             hasGreen = false;
         }
 
-        updateColor();
+        setPickedColor();
     }//GEN-LAST:event_greenCBStateChanged
 
     private void blueCBStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_blueCBStateChanged
@@ -446,8 +448,29 @@ public class MainFrame extends javax.swing.JFrame {
             hasBlue = false;
         }
 
-        updateColor();
+        setPickedColor();
     }//GEN-LAST:event_blueCBStateChanged
+
+    private void setPickedColor() {
+        int r = 0;
+        int g = 0;
+        int b = 0;
+
+        if (hasRed) {
+            r = 255;
+        }
+        if (hasGreen) {
+            g = 255;
+        }
+        if (hasBlue) {
+            b = 255;
+        }
+
+        selectedColor = new Color(r, g, b);
+
+        prevPanel.setSelectedColor(selectedColor);
+        gridPanel.setSelectedColor(selectedColor);
+    }
 
     private void setBGButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setBGButtonActionPerformed
         gridPanel.setAllColors(selectedColor);
@@ -473,16 +496,31 @@ public class MainFrame extends javax.swing.JFrame {
         applyTH();
     }//GEN-LAST:event_blueSliderStateChanged
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (fc == null) {
-            fc = new JFileChooser();
+    private void readSliderVals() {
+        redTH = redSlider.getValue();
+        greenTH = greenSlider.getValue();
+        blueTH = blueSlider.getValue();
+    }
+
+    private void applyTH() {
+        if (scaledImg != null) {
+            //convertColorArray(gridPanel.getColorArray());
+            //gridPanel.repaint();            
+            convertedImg = convertImg(scaledImg);
+            showImg(convertedImg);
+        }
+    }
+
+    private void loadMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadMatrixButtonActionPerformed
+        if (fc_matrix == null) {
+            fc_matrix = new JFileChooser();
         }
 
-        int returnVal = fc.showOpenDialog(this);
+        int returnVal = fc_matrix.showOpenDialog(this);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             try {
-                File file = fc.getSelectedFile();
+                File file = fc_matrix.getSelectedFile();
                 System.out.println("Loading file: " + file.getName());
                 gridPanel.setColorArray(getColorArrayFromFile(file));
                 gridPanel.repaint();
@@ -492,7 +530,7 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             System.out.println("Loading cancelled by user.");
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_loadMatrixButtonActionPerformed
 
     private void loadImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadImageButtonActionPerformed
 
@@ -526,14 +564,14 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_loadImageButtonActionPerformed
 
-    private void printMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printMatrixButtonActionPerformed
+    private void saveMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMatrixButtonActionPerformed
         if (matrixFrame == null) {
             matrixFrame = new MatrixFrame();
         }
 
         matrixFrame.setMatrix(gridPanel.getColorArray(), conf.getnX(), conf.getnY());
         matrixFrame.setVisible(true);
-    }//GEN-LAST:event_printMatrixButtonActionPerformed
+    }//GEN-LAST:event_saveMatrixButtonActionPerformed
 
     private void start3DButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_start3DButtonActionPerformed
 
@@ -546,9 +584,9 @@ public class MainFrame extends javax.swing.JFrame {
         animFrame.setVisible(true);
     }//GEN-LAST:event_start3DButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
         this.dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_closeButtonActionPerformed
 
     private Color[] getColorArrayFromFile(File file) throws FileNotFoundException {
 
@@ -625,17 +663,8 @@ public class MainFrame extends javax.swing.JFrame {
         }//end row
 
         colorArray = Tools.shiftMatrix(colorArray, nX, nY);
-        
-        return colorArray;
-    }
 
-    private void applyTH() {
-        if (scaledImg != null) {
-            //convertColorArray(gridPanel.getColorArray());
-            //gridPanel.repaint();            
-            convertedImg = convertImg(scaledImg);
-            showImg(convertedImg);
-        }
+        return colorArray;
     }
 
     private BufferedImage convertImg(BufferedImage scaledImg) {
@@ -678,34 +707,6 @@ public class MainFrame extends javax.swing.JFrame {
         return conImg;
     }
 
-    private void convertColorArray(Color[] colors) {
-        int nX = conf.getnX();
-        int nY = conf.getnY();
-
-        for (int yIdx = 0; yIdx < nY; yIdx++) {
-            for (int xIdx = 0; xIdx < nX; xIdx++) {
-
-                Color color = colors[(yIdx * nX) + xIdx];
-                int r = 0;
-                int g = 0;
-                int b = 0;
-
-                if (color.getRed() > redTH) {
-                    r = 255;
-                }
-                if (color.getGreen() > greenTH) {
-                    g = 255;
-                }
-                if (color.getBlue() > blueTH) {
-                    b = 255;
-                }
-
-                colors[(yIdx * nX) + xIdx] = new Color(r, g, b);
-            }
-        }
-
-    }
-
     private void showImg(BufferedImage img) {
         int nX = conf.getnX();
         int nY = conf.getnY();
@@ -722,33 +723,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         gridPanel.setColorArray(colorArray);
         gridPanel.repaint();
-    }
-
-    private void updateColor() {
-        int r = 0;
-        int g = 0;
-        int b = 0;
-
-        if (hasRed) {
-            r = 255;
-        }
-        if (hasGreen) {
-            g = 255;
-        }
-        if (hasBlue) {
-            b = 255;
-        }
-
-        selectedColor = new Color(r, g, b);
-
-        prevPanel.setSelectedColor(selectedColor);
-        gridPanel.setSelectedColor(selectedColor);
-    }
-
-    private void readSliderVals() {
-        redTH = redSlider.getValue();
-        greenTH = greenSlider.getValue();
-        blueTH = blueSlider.getValue();
     }
 
     /**
@@ -800,13 +774,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton applyTHButton;
     private javax.swing.JCheckBox blueCB;
     private javax.swing.JSlider blueSlider;
+    private javax.swing.JButton closeButton;
     private javax.swing.JPanel colorPickPanel;
     private javax.swing.JCheckBox greenCB;
     private javax.swing.JSlider greenSlider;
     private main.GridPanel gridPanel;
     private javax.swing.JPanel imagePanel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -818,10 +791,11 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JButton loadImageButton;
+    private javax.swing.JButton loadMatrixButton;
     private main.PrevPanel prevPanel;
-    private javax.swing.JButton printMatrixButton;
     private javax.swing.JCheckBox redCB;
     private javax.swing.JSlider redSlider;
+    private javax.swing.JButton saveMatrixButton;
     private javax.swing.JButton setBGButton;
     private javax.swing.JButton start3DButton;
     // End of variables declaration//GEN-END:variables
