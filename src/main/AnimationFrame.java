@@ -304,6 +304,7 @@ public class AnimationFrame extends javax.swing.JFrame {
         rotSpeedSlider.setMinimum(500);
         rotSpeedSlider.setMinorTickSpacing(500);
         rotSpeedSlider.setValue(10000);
+        rotSpeedSlider.setInverted(true);
         rotSpeedSlider.setPreferredSize(new java.awt.Dimension(100, 40));
         rotSpeedSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -320,8 +321,11 @@ public class AnimationFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
         optPanel.add(rotSpeedSlider, gridBagConstraints);
 
+        sphereLightSlider.setMajorTickSpacing(1);
+        sphereLightSlider.setMaximum(50);
         sphereLightSlider.setMinimum(1);
-        sphereLightSlider.setMinorTickSpacing(10);
+        sphereLightSlider.setMinorTickSpacing(1);
+        sphereLightSlider.setValue(25);
         sphereLightSlider.setPreferredSize(new java.awt.Dimension(100, 40));
         sphereLightSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
