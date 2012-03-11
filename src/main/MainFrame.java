@@ -78,7 +78,7 @@ public class MainFrame extends javax.swing.JFrame {
         closeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("GobeSimulator v0.2");
+        setTitle("GobeSimulator v0.3");
         setName("mainFrame");
         setResizable(false);
 
@@ -214,7 +214,9 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 6);
         imagePanel.add(applyTHButton, gridBagConstraints);
 
+        redSlider.setMajorTickSpacing(1);
         redSlider.setMaximum(255);
+        redSlider.setMinorTickSpacing(1);
         redSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 redSliderStateChanged(evt);
@@ -671,7 +673,7 @@ public class MainFrame extends javax.swing.JFrame {
         BufferedImage conImg = new BufferedImage(scaledImg.getWidth(), scaledImg.getHeight(), scaledImg.getType());
 
         int nX = conf.getnX();
-        int nY = conf.getnY();
+        int nY = conf.getnY();        
 
         int[] rgb = new int[nX * nY];
         int[] modrgb = new int[nX * nY];
@@ -681,21 +683,14 @@ public class MainFrame extends javax.swing.JFrame {
         for (int yIdx = 0; yIdx < nY; yIdx++) {
             for (int xIdx = 0; xIdx < nX; xIdx++) {
 
-
                 Color color = new Color(rgb[(yIdx * nX) + xIdx]);
                 int r = 0;
                 int g = 0;
                 int b = 0;
 
-                if (color.getRed() > redTH) {
-                    r = 255;
-                }
-                if (color.getGreen() > greenTH) {
-                    g = 255;
-                }
-                if (color.getBlue() > blueTH) {
-                    b = 255;
-                }
+                r = getMyColor(color.getRed(), redTH);
+                g = getMyColor(color.getGreen(), greenTH);
+                b = getMyColor(color.getBlue(), blueTH);     
 
                 modrgb[(yIdx * nX) + xIdx] = Tools.argb(255, r, g, b);
             }
@@ -704,6 +699,27 @@ public class MainFrame extends javax.swing.JFrame {
         conImg.setRGB(0, 0, nX, nY, modrgb, 0, nX);
 
         return conImg;
+    }
+
+    private int getMyColor(int color, int colorTH) {
+        int c = 0;
+        int diff = 0;
+        float colorWidth = 0f;
+        
+        int colorDepth = conf.getColorDepth();
+
+        if (color > colorTH) {
+            diff = 255 - colorTH;
+            colorWidth = ((float) diff) / ((float) colorDepth);
+            for (int i = 0; i < colorDepth; i++) {
+                if (color > colorTH + i * colorWidth && color <= colorTH + (i + 1) * colorWidth) {
+                    c = (int) (colorTH + (i + 1) * colorWidth);
+                    break;
+                }
+            }
+        }
+
+        return c;
     }
 
     private void showImg(BufferedImage img) {
@@ -730,7 +746,7 @@ public class MainFrame extends javax.swing.JFrame {
     public static void main(String args[]) {
         /*
          * Set the Nimbus look and feel
-         */       
+         */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /*
          * If Nimbus (introduced in Java SE 6) is not available, stay with the
@@ -738,26 +754,23 @@ public class MainFrame extends javax.swing.JFrame {
          * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         /*
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        * 
-        */
+         * try { for (javax.swing.UIManager.LookAndFeelInfo info :
+         * javax.swing.UIManager.getInstalledLookAndFeels()) { if
+         * ("Nimbus".equals(info.getName())) {
+         * javax.swing.UIManager.setLookAndFeel(info.getClassName()); break; } }
+         * } catch (ClassNotFoundException ex) {
+         * java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE,
+         * null, ex); } catch (InstantiationException ex) {
+         * java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE,
+         * null, ex); } catch (IllegalAccessException ex) {
+         * java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE,
+         * null, ex); } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+         * java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE,
+         * null, ex); }
+         *
+         */
         //</editor-fold>        
-        
+
         try {
             UIManager.setLookAndFeel("com.jtattoo.plaf.noire.NoireLookAndFeel");
             //UIManager.setLookAndFeel("com.jtattoo.plaf.hifi.HiFiLookAndFeel");
@@ -770,7 +783,7 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (UnsupportedLookAndFeelException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         /*
          * Create and display the form
          */
