@@ -43,6 +43,8 @@ public class AnimationFrame extends javax.swing.JFrame {
         this.nX = nX;
         this.nY = nY;
 
+        System.out.println("nX: " + nX + ", nY: " + nY);
+        
         createUniverse();
         createAppearance();
         createSpheres();
@@ -140,9 +142,9 @@ public class AnimationFrame extends javax.swing.JFrame {
 
         float sphereSize = 0.008f;
         double rho = 0.65;
-        double dphi = Math.toRadians(360d / 200d);
+        double dphi = Math.toRadians(360d / (double)nX);
         double theta_0 = Math.toRadians(20);
-        double dtheta = Math.toRadians(140d / 39d);
+        double dtheta = Math.toRadians(140d / (double)(nY-1));
 
         Appearance app = new Appearance();
         app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_READ);

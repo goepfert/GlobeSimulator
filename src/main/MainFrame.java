@@ -1,22 +1,28 @@
 package main;
 
 import java.awt.Color;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
  * @author goepfert
  */
-public class MainFrame extends javax.swing.JFrame {
+public class MainFrame extends javax.swing.JFrame implements Subscriber {
 
     private Config conf;
+    private int nX;
+    private int nY;
+    private int colorDepth;
+    //
     private boolean hasRed = false;
     private boolean hasGreen = false;
     private boolean hasBlue = false;
@@ -35,13 +41,32 @@ public class MainFrame extends javax.swing.JFrame {
     //
     private MatrixFrame matrixFrame;
     private AnimationFrame animFrame;
+    private ConfigFrame confFrame;
 
     public MainFrame() {
         initComponents();
 
         conf = Config.getInstance();
+        conf.subscribe("mainFrame", this);
+        readSubscription();
+
         readSliderVals();
         setPickedColor();
+    }
+
+    @Override
+    public void readSubscription() {
+        Properties prop = conf.getConfProps();
+
+        nX = Integer.parseInt(prop.getProperty("nX"));
+        nY = Integer.parseInt(prop.getProperty("nY"));
+        colorDepth = Integer.parseInt(prop.getProperty("colorDepth"));
+
+        reloadImg();
+
+        if (animFrame != null && !animFrame.isVisible()) {
+            start3DButton.doClick();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -59,7 +84,6 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         imagePanel = new javax.swing.JPanel();
         blueSlider = new javax.swing.JSlider();
-        applyTHButton = new javax.swing.JButton();
         redSlider = new javax.swing.JSlider();
         greenSlider = new javax.swing.JSlider();
         jLabel1 = new javax.swing.JLabel();
@@ -76,9 +100,10 @@ public class MainFrame extends javax.swing.JFrame {
         start3DButton = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         closeButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("GobeSimulator v0.3");
+        setTitle("GobeSimulator v0.4");
         setName("mainFrame");
         setResizable(false);
 
@@ -184,6 +209,7 @@ public class MainFrame extends javax.swing.JFrame {
         imagePanel.setLayout(new java.awt.GridBagLayout());
 
         blueSlider.setMaximum(255);
+        blueSlider.setValue(0);
         blueSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 blueSliderStateChanged(evt);
@@ -200,23 +226,10 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 6);
         imagePanel.add(blueSlider, gridBagConstraints);
 
-        applyTHButton.setText("Apply");
-        applyTHButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                applyTHButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 6);
-        imagePanel.add(applyTHButton, gridBagConstraints);
-
         redSlider.setMajorTickSpacing(1);
         redSlider.setMaximum(255);
         redSlider.setMinorTickSpacing(1);
+        redSlider.setValue(0);
         redSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 redSliderStateChanged(evt);
@@ -233,6 +246,7 @@ public class MainFrame extends javax.swing.JFrame {
         imagePanel.add(redSlider, gridBagConstraints);
 
         greenSlider.setMaximum(255);
+        greenSlider.setValue(0);
         greenSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 greenSliderStateChanged(evt);
@@ -376,6 +390,13 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Preferences");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -393,9 +414,11 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(97, 135, Short.MAX_VALUE))
+                                .addGap(97, 145, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(closeButton)
                                 .addContainerGap())))
                     .addGroup(layout.createSequentialGroup()
@@ -412,10 +435,15 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(closeButton))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(colorPickPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(imagePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(closeButton)
+                            .addComponent(jButton1)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(colorPickPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -478,10 +506,6 @@ public class MainFrame extends javax.swing.JFrame {
         gridPanel.repaint();
     }//GEN-LAST:event_setBGButtonActionPerformed
 
-    private void applyTHButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyTHButtonActionPerformed
-        applyTH();
-    }//GEN-LAST:event_applyTHButtonActionPerformed
-
     private void redSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_redSliderStateChanged
         readSliderVals();
         applyTH();
@@ -501,15 +525,6 @@ public class MainFrame extends javax.swing.JFrame {
         redTH = redSlider.getValue();
         greenTH = greenSlider.getValue();
         blueTH = blueSlider.getValue();
-    }
-
-    private void applyTH() {
-        if (scaledImg != null) {
-            //convertColorArray(gridPanel.getColorArray());
-            //gridPanel.repaint();            
-            convertedImg = convertImg(scaledImg);
-            showImg(convertedImg);
-        }
     }
 
     private void loadMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadMatrixButtonActionPerformed
@@ -558,11 +573,7 @@ public class MainFrame extends javax.swing.JFrame {
             System.out.println("Attachment cancelled by user.");
         }
 
-        if (orgImg != null) {
-            scaledImg = Tools.resizeImage(orgImg, conf.getnX(), conf.getnY());
-            convertedImg = scaledImg;
-            showImg(scaledImg);
-        }
+        reloadImg();
     }//GEN-LAST:event_loadImageButtonActionPerformed
 
     private void saveMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMatrixButtonActionPerformed
@@ -570,7 +581,7 @@ public class MainFrame extends javax.swing.JFrame {
             matrixFrame = new MatrixFrame();
         }
 
-        matrixFrame.setMatrix(gridPanel.getColorArray(), conf.getnX(), conf.getnY());
+        matrixFrame.setMatrix(gridPanel.getColorArray(), nX, nY);
         matrixFrame.setVisible(true);
     }//GEN-LAST:event_saveMatrixButtonActionPerformed
 
@@ -578,7 +589,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         if (animFrame == null) {
             animFrame = new AnimationFrame();
-            animFrame.init(gridPanel.getColorArray(), conf.getnX(), conf.getnY());
+            animFrame.init(gridPanel.getColorArray(), nX, nY);
         } else {
             animFrame.reloadSpheres(gridPanel.getColorArray());
         }
@@ -587,12 +598,18 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
         this.dispose();
+        System.exit(0);
     }//GEN-LAST:event_closeButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (confFrame == null) {
+            confFrame = new ConfigFrame();
+        }
+        confFrame.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     private Color[] getColorArrayFromFile(File file) throws FileNotFoundException {
 
-        int nX = conf.getnX();
-        int nY = conf.getnY();
         Color[] colorArray = new Color[nX * nY];
 
         String readText = new String();
@@ -672,9 +689,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         BufferedImage conImg = new BufferedImage(scaledImg.getWidth(), scaledImg.getHeight(), scaledImg.getType());
 
-        int nX = conf.getnX();
-        int nY = conf.getnY();        
-
         int[] rgb = new int[nX * nY];
         int[] modrgb = new int[nX * nY];
 
@@ -690,7 +704,7 @@ public class MainFrame extends javax.swing.JFrame {
 
                 r = getMyColor(color.getRed(), redTH);
                 g = getMyColor(color.getGreen(), greenTH);
-                b = getMyColor(color.getBlue(), blueTH);     
+                b = getMyColor(color.getBlue(), blueTH);
 
                 modrgb[(yIdx * nX) + xIdx] = Tools.argb(255, r, g, b);
             }
@@ -705,8 +719,6 @@ public class MainFrame extends javax.swing.JFrame {
         int c = 0;
         int diff = 0;
         float colorWidth = 0f;
-        
-        int colorDepth = conf.getColorDepth();
 
         if (color > colorTH) {
             diff = 255 - colorTH;
@@ -723,9 +735,6 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void showImg(BufferedImage img) {
-        int nX = conf.getnX();
-        int nY = conf.getnY();
-
         int[] rgb = new int[nX * nY];
         Color[] colorArray = new Color[nX * nY];
 
@@ -738,6 +747,22 @@ public class MainFrame extends javax.swing.JFrame {
 
         gridPanel.setColorArray(colorArray);
         gridPanel.repaint();
+    }
+
+    private void reloadImg() {
+        if (orgImg != null) {
+            scaledImg = Tools.resizeImage(orgImg, nX, nY);
+            //convertedImg = scaledImg;
+            //showImg(scaledImg);
+        }
+        applyTH();
+    }
+
+    private void applyTH() {
+        if (scaledImg != null) {           
+            convertedImg = convertImg(scaledImg);
+            showImg(convertedImg);
+        }
     }
 
     /**
@@ -795,7 +820,6 @@ public class MainFrame extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton applyTHButton;
     private javax.swing.JCheckBox blueCB;
     private javax.swing.JSlider blueSlider;
     private javax.swing.JButton closeButton;
@@ -804,6 +828,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JSlider greenSlider;
     private main.GridPanel gridPanel;
     private javax.swing.JPanel imagePanel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

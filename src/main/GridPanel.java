@@ -7,12 +7,13 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.Properties;
 
 /**
  *
  * @author goepfert
  */
-public final class GridPanel extends javax.swing.JPanel {
+public final class GridPanel extends javax.swing.JPanel implements Subscriber {
 
     private Graphics2D g2;
     private Config conf;
@@ -30,13 +31,23 @@ public final class GridPanel extends javax.swing.JPanel {
         initComponents();
 
         conf = Config.getInstance();
-        nX = conf.getnX();
-        nY = conf.getnY();
-        nPixel = conf.getnPixel();
+        conf.subscribe("gridPanel", this);
+        readSubscription();
+    }
+
+    @Override
+    public void readSubscription() {
+        Properties prop = conf.getConfProps();
+        
+        nX = Integer.parseInt( prop.getProperty("nX") );
+        nY = Integer.parseInt( prop.getProperty("nY") );
+        nPixel = Integer.parseInt( prop.getProperty("nPixel") );
 
         colorArray = new Color[nX * nY];
         selectedColor = Color.BLACK;
         setAllColors(selectedColor);
+        
+        repaint();
     }
 
     public void setAllColors(Color color) {
@@ -48,7 +59,7 @@ public final class GridPanel extends javax.swing.JPanel {
         }
     }
 
-    public void setColorArray(Color col[]) {        
+    public void setColorArray(Color col[]) {
         //System.arraycopy(col, 0, colorArray, 0, col.length);        
         colorArray = col;
     }
@@ -94,7 +105,7 @@ public final class GridPanel extends javax.swing.JPanel {
             for (int xIdx = 0; xIdx < nX; xIdx++) {
 
                 if (xPos > (xIdx * wRplus + nPixel) && xPos <= (xIdx * wRplus + nPixel + wR)
-                        && yPos > (yIdx * hRplus + nPixel) && yPos <= (yIdx * hRplus + nPixel + hR)) {                    
+                        && yPos > (yIdx * hRplus + nPixel) && yPos <= (yIdx * hRplus + nPixel + hR)) {
                     return (yIdx * nX) + xIdx;
                 }
             }
@@ -110,7 +121,7 @@ public final class GridPanel extends javax.swing.JPanel {
     private void mousePressedAndDragged(java.awt.event.MouseEvent evt) {
         int xPos = evt.getX();
         int yPos = evt.getY();
-                
+
         int colorIdx = getColorIdx(xPos, yPos);
 
         if (colorIdx < 0) {

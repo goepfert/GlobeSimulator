@@ -6,6 +6,7 @@ package main;
 
 import java.awt.Color;
 import java.io.*;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -14,17 +15,28 @@ import javax.swing.JFileChooser;
  *
  * @author goepfert
  */
-public class MatrixFrame extends javax.swing.JFrame {
+public class MatrixFrame extends javax.swing.JFrame implements Subscriber {
 
     private Config conf;
+    private int nY;
     private JFileChooser fc;
     private String text;
 
     public MatrixFrame() {
         initComponents();
         this.setLocationRelativeTo(null);
+
         conf = Config.getInstance();
+        conf.subscribe("matrixFrame", this);
+        readSubscription();
+
         text = new String();
+    }
+
+    @Override
+    public void readSubscription() {
+        Properties prop = conf.getConfProps();               
+        nY = Integer.parseInt( prop.getProperty("nY") );
     }
 
     @SuppressWarnings("unchecked")
@@ -235,7 +247,7 @@ public class MatrixFrame extends javax.swing.JFrame {
 
         String myText = new String();
 
-        for (int k = 0; k < (conf.getnY() / 8); k++) {
+        for (int k = 0; k < (nY / 8); k++) {
             byte colorByte = 0;
             for (int bitIdx = 0; bitIdx < 8; bitIdx++) {
                 //System.out.println("k / b:  " + k + " / " + bitIdx);

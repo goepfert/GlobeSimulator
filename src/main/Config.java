@@ -1,8 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package main;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Properties;
 
 /**
  *
@@ -10,53 +12,18 @@ package main;
  */
 public class Config {
 
-    private int nX;
-    private int nY;
-    private int nPixel;
-    private int colorDepth;
-
-    public int getnX() {
-        return nX;
-    }
-
-    public void setnX(int nX) {
-        this.nX = nX;
-    }
-
-    public int getnY() {
-        return nY;
-    }
-
-    public void setnY(int nY) {
-        this.nY = nY;
-    }
-
-    public int getnPixel() {
-        return nPixel;
-    }
-
-    public void setnPixel(int nPixel) {
-        this.nPixel = nPixel;
-    }
-
-    public int getColorDepth() {
-        return colorDepth;
-    }
-
-    public void setColorDepth(int colorDepth) {
-        this.colorDepth = colorDepth;
-    }
-
-    private void setDefaults() {
-        nX = 200;
-        nY = 40;
-        nPixel = 0;
-        colorDepth = 4;
-    }
-    
     private static Config instance = null;
+    //
+    private Properties confPropsDefaults;
+    private Properties confProps;
+    //
+    HashMap<String, Subscriber> subscribers;
+    
 
     private Config() {
+        confPropsDefaults = new Properties();
+        confProps = new Properties(confPropsDefaults);
+        subscribers = new HashMap<String, Subscriber>();
         setDefaults();
     }
 
@@ -66,4 +33,43 @@ public class Config {
         }
         return instance;
     }
+    
+    private void setDefaults() {
+        confPropsDefaults.setProperty("nX", "" + 200);
+        confPropsDefaults.setProperty("nY", "" + 40);
+        confPropsDefaults.setProperty("nPixel", "" + 0);
+        confPropsDefaults.setProperty("colorDepth", "" + 1);
+    }
+
+    public void loadProperties(String filename) {
+        //System.out.println(System.getProperty("user.dir"));
+        try {
+            FileInputStream propInFile = new FileInputStream(filename);
+            confProps.load(propInFile);
+            confProps.list(System.out);
+        } catch (FileNotFoundException e) {
+            System.err.println("Can’t find " + filename);
+        } catch (IOException e) {
+            System.err.println("I/O failed.");
+        }
+    }
+
+    public Properties getConfProps() {
+        return confProps;
+    }
+    
+    public void subscribe(String name, Subscriber obj) {                
+        subscribers.put(name, obj);
+    }
+
+    public void notifySubscribers() {        
+        for ( String name : subscribers.keySet() ) {
+            notifySubscriber(name);
+        }        
+    }
+    
+    public void notifySubscriber(String name) {
+        subscribers.get(name).readSubscription();
+    }
+    
 }
