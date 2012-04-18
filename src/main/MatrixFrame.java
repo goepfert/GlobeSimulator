@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package main;
 
 import java.awt.Color;
@@ -9,6 +5,7 @@ import java.io.*;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 /**
@@ -31,6 +28,11 @@ public class MatrixFrame extends javax.swing.JFrame implements Subscriber {
         readSubscription();
 
         text = new String();
+        
+        ImageIcon imageIcon = new ImageIcon("Logo_SL_Bloom_4.png");
+        this.setIconImage(imageIcon.getImage());
+        
+        setLocationRelativeTo(getParent());
     }
 
     @Override

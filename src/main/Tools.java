@@ -6,7 +6,9 @@ package main;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 
 /**
  *
@@ -87,4 +89,11 @@ public class Tools {
         return shiftedColors;
     }
     
+    static Image getImageFromArray(int[] pixels, int width, int height) {
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            WritableRaster raster = (WritableRaster) image.getData();
+            raster.setPixels(0,0,width,height,pixels);
+            return image;
+        }
+
 }

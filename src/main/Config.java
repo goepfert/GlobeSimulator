@@ -18,7 +18,6 @@ public class Config {
     private Properties confProps;
     //
     HashMap<String, Subscriber> subscribers;
-    
 
     private Config() {
         confPropsDefaults = new Properties();
@@ -33,12 +32,17 @@ public class Config {
         }
         return instance;
     }
-    
+
     private void setDefaults() {
         confPropsDefaults.setProperty("nX", "" + 200);
         confPropsDefaults.setProperty("nY", "" + 40);
         confPropsDefaults.setProperty("nPixel", "" + 0);
-        confPropsDefaults.setProperty("colorDepth", "" + 1);
+        confPropsDefaults.setProperty("colorDepth", "" + 8);
+        confPropsDefaults.setProperty("sphereSize", "" + 1);
+        confPropsDefaults.setProperty("lightSourceBrightness", "" + 0.5f);
+        confPropsDefaults.setProperty("ledBrightness", "" + 2.5f);
+        confPropsDefaults.setProperty("rotSpeed", "" + 10000);
+        confPropsDefaults.setProperty("freeMove", "" + 0);        
     }
 
     public void loadProperties(String filename) {
@@ -57,19 +61,28 @@ public class Config {
     public Properties getConfProps() {
         return confProps;
     }
-    
-    public void subscribe(String name, Subscriber obj) {                
+
+    public void subscribe(String name, Subscriber obj) {
         subscribers.put(name, obj);
     }
 
-    public void notifySubscribers() {        
-        for ( String name : subscribers.keySet() ) {
+    public void unsubscribe(String name) {
+        Object getObj = subscribers.get(name);
+        if (getObj != null) {
+            subscribers.remove(name);
+        }
+    }
+
+    public void notifySubscribers() {
+        for (String name : subscribers.keySet()) {
             notifySubscriber(name);
-        }        
+        }
     }
-    
+
     public void notifySubscriber(String name) {
-        subscribers.get(name).readSubscription();
+        Object getObj = subscribers.get(name);
+        if (getObj != null) {
+            ((Subscriber) getObj).readSubscription();
+        }
     }
-    
 }
